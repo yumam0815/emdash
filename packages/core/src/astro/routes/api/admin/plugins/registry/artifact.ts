@@ -27,9 +27,9 @@ import type { APIRoute } from "astro";
 
 import { requirePerm } from "#api/authorize.js";
 import { apiError } from "#api/error.js";
-import { verifyChecksum } from "#api/handlers/registry.js";
 import { assertSafeArtifactUrl } from "#api/index.js";
 
+import { verifyRegistryArtifactChecksum } from "../../../../../../registry/artifact-checksum.js";
 import { fetchRegistryArtifactUrl } from "../../../../../../registry/artifact-fetch.js";
 import { coerceRegistryConfig, validateAggregatorUrl } from "../../../../../../registry/config.js";
 
@@ -292,7 +292,7 @@ export const GET: APIRoute = async ({ url, locals }) => {
 		if (bytes === null) {
 			return apiError("ARTIFACT_TOO_LARGE", "Artifact exceeds size limit", 413);
 		}
-		if (!(await verifyChecksum(bytes, descriptor.checksum))) {
+		if (!(await verifyRegistryArtifactChecksum(bytes, descriptor.checksum))) {
 			return apiError(
 				"ARTIFACT_CHECKSUM_MISMATCH",
 				"Artifact bytes do not match the approved release record",
