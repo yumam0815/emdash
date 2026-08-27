@@ -13,6 +13,18 @@ import {
 	handleRevokeApproverCredential,
 	matchApproverCredentialPath,
 } from "./approvals/routes.js";
+import {
+	handleArchivePublisher,
+	handlePreparePublisherRestore,
+	handleRestorePublisher,
+	matchPublisherArchivePath,
+	matchPublisherRestorePreparePath,
+	matchPublisherRestorePath,
+} from "./backup/routes.js";
+import {
+	handleStartPublisherArchive,
+	matchPublisherArchiveStartPath,
+} from "./backup/workflow-route.js";
 import type { ServiceConfiguration } from "./config.js";
 import {
 	handleControlAudit,
@@ -22,6 +34,7 @@ import {
 	handleSetPublisherControl,
 	handleSetServiceMode,
 } from "./control-do/routes.js";
+import { handleListDirectory } from "./directory/routes.js";
 import {
 	handleCancelReleaseIntent,
 	handleGetReleaseIntent,
@@ -36,6 +49,12 @@ import {
 	handlePublisherDelegationAuthorize,
 	handlePublisherIdentityAuthorize,
 } from "./oauth/routes.js";
+import {
+	handleRotateApproverEncryption,
+	handleRotatePublisherEncryption,
+	matchApproverEncryptionRotationPath,
+	matchPublisherEncryptionRotationPath,
+} from "./operations/encryption-routes.js";
 import {
 	handleCancelOperatorIntent,
 	handleGetOperatorPublisher,
@@ -208,6 +227,12 @@ export const ROUTES = Object.freeze([
 		handler: handleServiceStatus,
 	},
 	{
+		method: "GET",
+		path: "/admin/api/directory",
+		accessRole: "viewer",
+		handler: handleListDirectory,
+	},
+	{
 		method: "POST",
 		path: "/admin/api/pause",
 		accessRole: "admin",
@@ -233,6 +258,48 @@ export const ROUTES = Object.freeze([
 		match: matchOperatorPublisherRevokePath,
 		accessRole: "admin",
 		handler: handleRevokeOperatorPublisher,
+	},
+	{
+		method: "POST",
+		path: "/admin/api/publishers/{publisherDid}/encryption/rotate",
+		match: matchPublisherEncryptionRotationPath,
+		accessRole: "admin",
+		handler: handleRotatePublisherEncryption,
+	},
+	{
+		method: "POST",
+		path: "/admin/api/publishers/{publisherDid}/archive",
+		match: matchPublisherArchivePath,
+		accessRole: "admin",
+		handler: handleArchivePublisher,
+	},
+	{
+		method: "POST",
+		path: "/admin/api/publishers/{publisherDid}/archive/start",
+		match: matchPublisherArchiveStartPath,
+		accessRole: "admin",
+		handler: handleStartPublisherArchive,
+	},
+	{
+		method: "POST",
+		path: "/admin/api/publishers/{publisherDid}/restore",
+		match: matchPublisherRestorePath,
+		accessRole: "admin",
+		handler: handleRestorePublisher,
+	},
+	{
+		method: "POST",
+		path: "/admin/api/publishers/{publisherDid}/restore/prepare",
+		match: matchPublisherRestorePreparePath,
+		accessRole: "admin",
+		handler: handlePreparePublisherRestore,
+	},
+	{
+		method: "POST",
+		path: "/admin/api/approvers/{approverDid}/encryption/rotate",
+		match: matchApproverEncryptionRotationPath,
+		accessRole: "admin",
+		handler: handleRotateApproverEncryption,
 	},
 	{
 		method: "POST",
