@@ -1061,6 +1061,7 @@ function parsePreparedPublisherRestore(value: unknown): PreparePublisherRestoreR
 		!publisherDid ||
 		!DID_PATTERN.test(publisherDid) ||
 		value["prepared"] !== true ||
+		typeof value["replayed"] !== "boolean" ||
 		deletedIntents === null ||
 		deletedIntents < 0 ||
 		deletedWorkloads === null ||
@@ -1068,7 +1069,14 @@ function parsePreparedPublisherRestore(value: unknown): PreparePublisherRestoreR
 	) {
 		throw invalidResponse();
 	}
-	return { archiveId, publisherDid, prepared: true, deletedIntents, deletedWorkloads };
+	return {
+		archiveId,
+		publisherDid,
+		prepared: true,
+		deletedIntents,
+		deletedWorkloads,
+		replayed: value["replayed"],
+	};
 }
 
 export class ReleaseServiceOperatorClient extends BaseReleaseServiceClient {
