@@ -1,5 +1,15 @@
 # @emdash-cms/cache-demo-site
 
+## 0.0.39
+
+### Patch Changes
+
+- Updated dependencies [[`3e90689`](https://github.com/emdash-cms/emdash/commit/3e90689102d02e479c0130dcee520c5209530e94), [`8d8d3de`](https://github.com/emdash-cms/emdash/commit/8d8d3de006ca8652f0ec9e531dd8be7d851e1a4f), [`b383a67`](https://github.com/emdash-cms/emdash/commit/b383a67b5f4a75d5757f76c4385e9ee83df6f3de), [`f6da16b`](https://github.com/emdash-cms/emdash/commit/f6da16b8cea400d1d6dbcb6b9540d0c59004c58f), [`9c52b39`](https://github.com/emdash-cms/emdash/commit/9c52b39fa82f3c13fe9bfbc04d0aa36de4acc219), [`0f225eb`](https://github.com/emdash-cms/emdash/commit/0f225ebe77559139570cef6231360b60f99be9b5), [`2fde0f9`](https://github.com/emdash-cms/emdash/commit/2fde0f9e5b5d864bcd8006ec243ff2c5f7dde9df), [`37c5010`](https://github.com/emdash-cms/emdash/commit/37c50108aa3489c134f182919cbf78bfa256e520), [`a1ddcfb`](https://github.com/emdash-cms/emdash/commit/a1ddcfb24438ab9af077f795a9dbbe1ba91e1b52), [`b4c73ac`](https://github.com/emdash-cms/emdash/commit/b4c73acd9ba718f55182279dd9c8dd2b6ef2df22), [`436f63d`](https://github.com/emdash-cms/emdash/commit/436f63d7f9f8bf43062ccdbbed76b98307b59149), [`815553c`](https://github.com/emdash-cms/emdash/commit/815553cbcb3f0263116a1dcde3a039fadd867000), [`9c52b39`](https://github.com/emdash-cms/emdash/commit/9c52b39fa82f3c13fe9bfbc04d0aa36de4acc219), [`f527127`](https://github.com/emdash-cms/emdash/commit/f5271270ea32f8c771016d2b4cdf02cb1a0505e2), [`f00174b`](https://github.com/emdash-cms/emdash/commit/f00174b798aa94f31e51dc4b3402f186c25532c7), [`9c52b39`](https://github.com/emdash-cms/emdash/commit/9c52b39fa82f3c13fe9bfbc04d0aa36de4acc219), [`628630a`](https://github.com/emdash-cms/emdash/commit/628630acb5bc0b010d7bd317db9d02b70a70d579), [`e3ad082`](https://github.com/emdash-cms/emdash/commit/e3ad0823121704c508cd104783a59fccd3f6a44e), [`abd1042`](https://github.com/emdash-cms/emdash/commit/abd1042ae92ba9c8e9416fed4dc910ecce4802b3), [`f00174b`](https://github.com/emdash-cms/emdash/commit/f00174b798aa94f31e51dc4b3402f186c25532c7), [`f613a14`](https://github.com/emdash-cms/emdash/commit/f613a1470581ad750183ba74ba9562d624db8d88)]:
+  - emdash@0.36.0
+  - @emdash-cms/cloudflare@0.36.0
+  - @emdash-cms/plugin-cli@0.8.2
+  - @emdash-cms/plugin-webhook-notifier@0.2.0
+
 ## 0.0.38
 
 ### Patch Changes

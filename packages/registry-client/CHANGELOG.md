@@ -1,5 +1,21 @@
 # @emdash-cms/registry-client
 
+## 0.4.0
+
+### Minor Changes
+
+- [#2647](https://github.com/emdash-cms/emdash/pull/2647) [`e3ad082`](https://github.com/emdash-cms/emdash/commit/e3ad0823121704c508cd104783a59fccd3f6a44e) Thanks [@ascorbic](https://github.com/ascorbic)! - Adds signed-label policy and listing-status support to the plugin registry client. Registry requests use the aggregator's required listing policy with an optional accepted-labeler declaration, and withdrawn releases are excluded from install and update results.
+
+  The EmDash admin waits for a fresh listing-policy response before rendering registry metadata, uses the approved author name or publisher DID instead of a mutable handle, and does not request media for an unapproved release. Install, update, and media-proxy checks enforce listing withdrawal independently from the existing plugin-code and capability checks.
+
+  Registry artifact downloads and proxied media connect only to the public IP addresses validated for each URL, preventing DNS changes between validation and connection from reaching private services.
+
+### Patch Changes
+
+- Updated dependencies [[`6178888`](https://github.com/emdash-cms/emdash/commit/61788888bf5933e2a9ac310a931f1c241fa63878)]:
+  - @emdash-cms/registry-moderation@0.1.0
+  - @emdash-cms/registry-lexicons@0.4.0
+
 ## 0.3.4
 
 ### Patch Changes

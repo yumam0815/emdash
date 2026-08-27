@@ -1,5 +1,114 @@
 # emdash
 
+## 0.36.0
+
+### Minor Changes
+
+- [#2582](https://github.com/emdash-cms/emdash/pull/2582) [`8d8d3de`](https://github.com/emdash-cms/emdash/commit/8d8d3de006ca8652f0ec9e531dd8be7d851e1a4f) Thanks [@khoinguyenpham04](https://github.com/khoinguyenpham04)! - Adds numbered page navigation and page-size controls to the local Media Library. Media list requests can opt into numbered pages with `page` and receive an exact `totalCount`; cursor pagination remains the default.
+
+  `MediaLibrary` accepts controlled numbered pagination through `pagination`. Existing `hasMore` and `onLoadMore` props remain supported when `pagination` is omitted.
+
+- [#2584](https://github.com/emdash-cms/emdash/pull/2584) [`a1ddcfb`](https://github.com/emdash-cms/emdash/commit/a1ddcfb24438ab9af077f795a9dbbe1ba91e1b52) Thanks [@khoinguyenpham04](https://github.com/khoinguyenpham04)! - Adds flat media folders to the `emdash` REST and typed client APIs. Existing media remains in the
+  Main library after upgrade, so sites do not need to migrate media assignments.
+
+  - Includes database migration `072_media_folders`.
+
+  Use `GET` or `POST /_emdash/api/media/folders` to list or create folders, and `PUT` or
+  `DELETE /_emdash/api/media/folders/:id` to rename or delete them. Folder reads require
+  `media:read`; folder writes require `media:edit_any`. Typed clients expose the corresponding
+  `mediaFolderList`, `mediaFolderCreate`, `mediaFolderUpdate`, and `mediaFolderDelete` methods.
+
+  Media list requests can filter by a folder ID or use `folderId=unfiled` for the Main library.
+  Media updates and `mediaSetFolder` accept a folder ID, `null`, or `unfiled`. Authors can assign
+  their own media, while editors can assign any media.
+
+  Deleting a folder returns its media to the Main library without changing media IDs, storage keys,
+  URLs, or usage records.
+
+- [#2480](https://github.com/emdash-cms/emdash/pull/2480) [`b4c73ac`](https://github.com/emdash-cms/emdash/commit/b4c73acd9ba718f55182279dd9c8dd2b6ef2df22) Thanks [@DavidPivert](https://github.com/DavidPivert)! - `LiveSearch` now scopes its results to the locale of the page it is used on.
+
+  **Behaviour change.** The component reads `Astro.currentLocale` and forwards it as the `locale` query parameter to `/_emdash/api/search` and `/_emdash/api/search/suggest`, which both already filtered on it. Until now the component never sent one, so a translated site got every entry back once per language — a French visitor searching from a French page saw each result twice, the second one opening its English page. Sites with `i18n` configured that relied on searching across every locale will see fewer results than before.
+
+  Two ways to opt out: pass an explicit `locale` to search a different one, or `locale={null}` to search across every locale, which is the previous behaviour.
+
+  ```astro
+  <!-- results in the page's own locale (new default) -->
+  <LiveSearch collections={["posts", "pages"]} />
+
+  <!-- every locale, as before -->
+  <LiveSearch collections={["posts", "pages"]} locale={null} />
+  ```
+
+  Sites without Astro's `i18n` configured are unaffected: `Astro.currentLocale` is `undefined` there, so no `locale` parameter is sent and the search still spans everything.
+
+- [#2624](https://github.com/emdash-cms/emdash/pull/2624) [`436f63d`](https://github.com/emdash-cms/emdash/commit/436f63d7f9f8bf43062ccdbbed76b98307b59149) Thanks [@khoinguyenpham04](https://github.com/khoinguyenpham04)! - Adds focal points for local images so cover-cropped thumbnails, galleries, and image components keep the selected subject visible.
+
+- [#2586](https://github.com/emdash-cms/emdash/pull/2586) [`815553c`](https://github.com/emdash-cms/emdash/commit/815553cbcb3f0263116a1dcde3a039fadd867000) Thanks [@khoinguyenpham04](https://github.com/khoinguyenpham04)! - Adds flat-folder organization to the local Media Library. Editors can create, rename, and delete folders. Authors can organize their own local media, and editors can organize any local media, through Media Details or by dragging a media card or row onto a visible folder.
+
+  Uploads continue to enter the Main library. Deleting a folder returns its media to the Main library without deleting files or changing their URLs.
+
+- [#2538](https://github.com/emdash-cms/emdash/pull/2538) [`9c52b39`](https://github.com/emdash-cms/emdash/commit/9c52b39fa82f3c13fe9bfbc04d0aa36de4acc219) Thanks [@khoinguyenpham04](https://github.com/khoinguyenpham04)! - Adds a media usage tracking setting. Tracking is enabled during initial setup. Existing sites enable it from Settings, keep the page open while EmDash scans existing content, and can return later to continue from saved progress.
+
+- [#2106](https://github.com/emdash-cms/emdash/pull/2106) [`f00174b`](https://github.com/emdash-cms/emdash/commit/f00174b798aa94f31e51dc4b3402f186c25532c7) Thanks [@gruntlord5](https://github.com/gruntlord5)! - Updates `sqlite()` and the EmDash CLI to use Node.js's built-in SQLite driver. Node.js deployments can install and run EmDash without compiling or downloading the `better-sqlite3` native add-on. Existing SQLite database files and `sqlite({ url })` configuration continue to work.
+
+  This release requires Node.js 22.16 or later. Check the installed version with `node --version` and upgrade Node.js before updating EmDash if it reports an earlier release.
+
+  Node.js 22 prints its standard `ExperimentalWarning: SQLite is an experimental feature` message when the SQLite adapter loads. Node.js 24 does not print this warning.
+
+  If `better-sqlite3` is listed in the site's `package.json` only for EmDash, remove that dependency after updating.
+
+- [#2538](https://github.com/emdash-cms/emdash/pull/2538) [`9c52b39`](https://github.com/emdash-cms/emdash/commit/9c52b39fa82f3c13fe9bfbc04d0aa36de4acc219) Thanks [@khoinguyenpham04](https://github.com/khoinguyenpham04)! - Removes scheduled media usage recovery. Media usage tracking now advances only while an administrator keeps its settings page visible. This breaks Cloudflare deployments that configure `mediaUsageCron` and Node.js integrations that provide a custom `CronScheduler`.
+
+  #### What should I do?
+
+  On Cloudflare, remove the dedicated media usage Cron Trigger and the `mediaUsageCron` option. Keep the general Cron Trigger unchanged; no replacement trigger is required.
+
+  If you provide a custom Node.js scheduler, remove `setMediaUsageMaintenance()`. A custom `CronScheduler` now implements only `start()`, `stop()`, `reschedule()`, and `setSystemCleanup()`.
+
+  Keep **Settings → Media usage tracking** open until it shows **Ready**. If the page closes, return to continue from saved progress.
+
+- [#2647](https://github.com/emdash-cms/emdash/pull/2647) [`e3ad082`](https://github.com/emdash-cms/emdash/commit/e3ad0823121704c508cd104783a59fccd3f6a44e) Thanks [@ascorbic](https://github.com/ascorbic)! - Adds signed-label policy and listing-status support to the plugin registry client. Registry requests use the aggregator's required listing policy with an optional accepted-labeler declaration, and withdrawn releases are excluded from install and update results.
+
+  The EmDash admin waits for a fresh listing-policy response before rendering registry metadata, uses the approved author name or publisher DID instead of a mutable handle, and does not request media for an unapproved release. Install, update, and media-proxy checks enforce listing withdrawal independently from the existing plugin-code and capability checks.
+
+  Registry artifact downloads and proxied media connect only to the public IP addresses validated for each URL, preventing DNS changes between validation and connection from reaching private services.
+
+### Patch Changes
+
+- [#2683](https://github.com/emdash-cms/emdash/pull/2683) [`3e90689`](https://github.com/emdash-cms/emdash/commit/3e90689102d02e479c0130dcee520c5209530e94) Thanks [@hossein-webdev](https://github.com/hossein-webdev)! - Fixes AVIF images being rejected with "File type not allowed" on upload. `image/avif` is back in the default media allowlist alongside PNG, JPEG, GIF, and WebP, so editors can upload `.avif` files again from the media library and from image fields that use the default allowlist.
+
+  The admin file picker now offers `.avif` files and renders their thumbnails, the built-in "Images" preset in a field's allowed-types editor includes AVIF, and `.avif` works as extension shorthand in a field's `allowedMimeTypes`.
+
+  SVG stays excluded from the default allowlist.
+
+- [#2599](https://github.com/emdash-cms/emdash/pull/2599) [`b383a67`](https://github.com/emdash-cms/emdash/commit/b383a67b5f4a75d5757f76c4385e9ee83df6f3de) Thanks [@khoinguyenpham04](https://github.com/khoinguyenpham04)! - Fixes code blocks in the admin and inline visual editors so Tab and Shift+Tab indent and outdent code instead of moving focus.
+
+- [#2445](https://github.com/emdash-cms/emdash/pull/2445) [`f6da16b`](https://github.com/emdash-cms/emdash/commit/f6da16b8cea400d1d6dbcb6b9540d0c59004c58f) Thanks [@khoinguyenpham04](https://github.com/khoinguyenpham04)! - Adds a one-time, administrator-controlled process for enabling automatic media usage indexing in production.
+
+- [#2538](https://github.com/emdash-cms/emdash/pull/2538) [`9c52b39`](https://github.com/emdash-cms/emdash/commit/9c52b39fa82f3c13fe9bfbc04d0aa36de4acc219) Thanks [@khoinguyenpham04](https://github.com/khoinguyenpham04)! - Speeds up the initial scan when administrators turn on media usage tracking on Cloudflare Workers and Node.js.
+
+- [#2598](https://github.com/emdash-cms/emdash/pull/2598) [`0f225eb`](https://github.com/emdash-cms/emdash/commit/0f225ebe77559139570cef6231360b60f99be9b5) Thanks [@Glacier-Luo](https://github.com/Glacier-Luo)! - Fixes session-authenticated CMS comment submissions so they retain the user identity and honor automatic approval settings.
+
+- [#2600](https://github.com/emdash-cms/emdash/pull/2600) [`2fde0f9`](https://github.com/emdash-cms/emdash/commit/2fde0f9e5b5d864bcd8006ec243ff2c5f7dde9df) Thanks [@khoinguyenpham04](https://github.com/khoinguyenpham04)! - Fixes the Playground welcome dialog reappearing after it has been dismissed and the page is reloaded or Edit mode is toggled.
+
+- [#2556](https://github.com/emdash-cms/emdash/pull/2556) [`37c5010`](https://github.com/emdash-cms/emdash/commit/37c50108aa3489c134f182919cbf78bfa256e520) Thanks [@cherenkov](https://github.com/cherenkov)! - Fixes `emdash content create` and `content update` failing with "Cannot construct a Request with a Request object that has already been used" when the stored access token has expired. Requests carrying a body are now retried correctly after the token is refreshed.
+
+- [#2470](https://github.com/emdash-cms/emdash/pull/2470) [`f527127`](https://github.com/emdash-cms/emdash/commit/f5271270ea32f8c771016d2b4cdf02cb1a0505e2) Thanks [@khoinguyenpham04](https://github.com/khoinguyenpham04)! - Adds a coverage-aware Used in section to local media details.
+
+- [#2612](https://github.com/emdash-cms/emdash/pull/2612) [`628630a`](https://github.com/emdash-cms/emdash/commit/628630acb5bc0b010d7bd317db9d02b70a70d579) Thanks [@danielmlr](https://github.com/danielmlr)! - Fixes SQLite and D1 sites where an interrupted upgrade left the byline credits table staged as `_emdash_content_bylines_new`, so pages, feeds and the admin reported no entries although the content was intact. The next migration run restores the table and the stored credits.
+
+- [#2472](https://github.com/emdash-cms/emdash/pull/2472) [`abd1042`](https://github.com/emdash-cms/emdash/commit/abd1042ae92ba9c8e9416fed4dc910ecce4802b3) Thanks [@khoinguyenpham04](https://github.com/khoinguyenpham04)! - Fixes seeded media references using a different ID from their media-library item and prepares Used in data for newly seeded development sites.
+
+- [#2106](https://github.com/emdash-cms/emdash/pull/2106) [`f00174b`](https://github.com/emdash-cms/emdash/commit/f00174b798aa94f31e51dc4b3402f186c25532c7) Thanks [@gruntlord5](https://github.com/gruntlord5)! - Fixes boolean query parameters on SQLite, including boolean equality filters in the plugin storage API.
+
+- [#2463](https://github.com/emdash-cms/emdash/pull/2463) [`f613a14`](https://github.com/emdash-cms/emdash/commit/f613a1470581ad750183ba74ba9562d624db8d88) Thanks [@helio-cf](https://github.com/helio-cf)! - Fixes media previews for streaming providers such as Cloudflare Stream. Video from these providers now shows its poster thumbnail in the media library grid and list, plays in the detail panel instead of stalling at 0:00, and reports the file size the provider supplies. Also exports `Media` from `emdash/ui`, so frontends can render provider-backed video and audio that `Image` cannot.
+
+- Updated dependencies [[`724241f`](https://github.com/emdash-cms/emdash/commit/724241f95f390a09f896a817f4e48aa2883ddbd7), [`72664ad`](https://github.com/emdash-cms/emdash/commit/72664ad09c230e5b0ba5b55789b5eb118c6b487e), [`3e90689`](https://github.com/emdash-cms/emdash/commit/3e90689102d02e479c0130dcee520c5209530e94), [`2ffda17`](https://github.com/emdash-cms/emdash/commit/2ffda1737cfbe57c5d10bf57f2b3a48f4d49ae4a), [`42fa5d8`](https://github.com/emdash-cms/emdash/commit/42fa5d8ed3ee1858468603eb3d5a39810cf20e27), [`8d8d3de`](https://github.com/emdash-cms/emdash/commit/8d8d3de006ca8652f0ec9e531dd8be7d851e1a4f), [`2b54096`](https://github.com/emdash-cms/emdash/commit/2b540969f3a73f670c724c17ac59d778d429e055), [`76dd3eb`](https://github.com/emdash-cms/emdash/commit/76dd3ebee96ddf53a149d09f98919d43f07fd53a), [`b383a67`](https://github.com/emdash-cms/emdash/commit/b383a67b5f4a75d5757f76c4385e9ee83df6f3de), [`05b0a8b`](https://github.com/emdash-cms/emdash/commit/05b0a8bb2453d14dd2a65ea22a1e6af6d0a3048b), [`1f2678b`](https://github.com/emdash-cms/emdash/commit/1f2678b7a477fdd225d2888f50fa664c85cf9e43), [`724241f`](https://github.com/emdash-cms/emdash/commit/724241f95f390a09f896a817f4e48aa2883ddbd7), [`436f63d`](https://github.com/emdash-cms/emdash/commit/436f63d7f9f8bf43062ccdbbed76b98307b59149), [`815553c`](https://github.com/emdash-cms/emdash/commit/815553cbcb3f0263116a1dcde3a039fadd867000), [`9c52b39`](https://github.com/emdash-cms/emdash/commit/9c52b39fa82f3c13fe9bfbc04d0aa36de4acc219), [`f527127`](https://github.com/emdash-cms/emdash/commit/f5271270ea32f8c771016d2b4cdf02cb1a0505e2), [`e3ad082`](https://github.com/emdash-cms/emdash/commit/e3ad0823121704c508cd104783a59fccd3f6a44e), [`52f7c91`](https://github.com/emdash-cms/emdash/commit/52f7c91ae9efe2a9b023ea7b6cb739376f8da096), [`7571581`](https://github.com/emdash-cms/emdash/commit/7571581d598803162f59c6105e23fb0bf29f6520), [`72664ad`](https://github.com/emdash-cms/emdash/commit/72664ad09c230e5b0ba5b55789b5eb118c6b487e), [`f613a14`](https://github.com/emdash-cms/emdash/commit/f613a1470581ad750183ba74ba9562d624db8d88), [`1c6b893`](https://github.com/emdash-cms/emdash/commit/1c6b893b40134aeaeedd056594d5bd7b6bfc1a53)]:
+  - @emdash-cms/admin@0.36.0
+  - @emdash-cms/registry-client@0.4.0
+  - @emdash-cms/auth@0.36.0
+  - @emdash-cms/gutenberg-to-portable-text@0.36.0
+
 ## 0.35.0
 
 ### Minor Changes
