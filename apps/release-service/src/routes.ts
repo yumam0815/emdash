@@ -27,16 +27,22 @@ import {
 } from "./backup/workflow-route.js";
 import type { ServiceConfiguration } from "./config.js";
 import {
+	handleActivateEncryptionKey,
 	handleControlAudit,
+	handleEncryptionKeyStatus,
 	handleGetPublisherControl,
 	handleReadiness,
+	handleRetireEncryptionKey,
 	handleServiceStatus,
 	handleSetPublisherControl,
 	handleSetServiceMode,
+	handleStartEncryptionVerification,
+	matchRetireEncryptionKeyPath,
 } from "./control-do/routes.js";
 import { handleListDirectory } from "./directory/routes.js";
 import {
 	handleCancelReleaseIntent,
+	handleDryRunReleaseIntent,
 	handleGetReleaseIntent,
 	handleSubmitReleaseIntent,
 	matchIntentCancelPath,
@@ -69,11 +75,14 @@ import {
 } from "./operator/routes.js";
 import {
 	handleDisablePublisherWorkload,
+	handleGetPublisherApproverStatus,
 	handleGetPublisher,
+	handleListPublisherAudit,
 	handleListPublisherIntents,
 	handleListPublisherWorkloads,
 	handlePutPublisherWorkload,
 	handleRevokePublisherDelegation,
+	matchPublisherApproverStatusPath,
 	matchPublisherWorkloadPath,
 } from "./publisher/routes.js";
 
@@ -109,6 +118,12 @@ export const ROUTES = Object.freeze([
 		path: "/v1/release-intents",
 		handler: (request, requestId, configuration) =>
 			handleSubmitReleaseIntent(request, requestId, configuration),
+	},
+	{
+		method: "POST",
+		path: "/v1/release-intents/dry-run",
+		handler: (request, requestId, configuration) =>
+			handleDryRunReleaseIntent(request, requestId, configuration),
 	},
 	{
 		method: "GET",
@@ -158,8 +173,20 @@ export const ROUTES = Object.freeze([
 	},
 	{
 		method: "GET",
+		path: "/v1/publisher/workloads/{packageSlug}/approvers",
+		match: matchPublisherApproverStatusPath,
+		handler: (request, requestId, configuration, params) =>
+			handleGetPublisherApproverStatus(request, requestId, configuration, params),
+	},
+	{
+		method: "GET",
 		path: "/v1/publisher/intents",
 		handler: handleListPublisherIntents,
+	},
+	{
+		method: "GET",
+		path: "/v1/publisher/audit",
+		handler: handleListPublisherAudit,
 	},
 	{
 		method: "POST",
@@ -340,6 +367,12 @@ export const ROUTES = Object.freeze([
 		handler: handleControlAudit,
 	},
 	{
+		method: "GET",
+		path: "/admin/api/viewer/encryption/keys",
+		accessRole: "viewer",
+		handler: handleEncryptionKeyStatus,
+	},
+	{
 		method: "POST",
 		path: "/admin/api/admin/service-mode",
 		accessRole: "admin",
@@ -350,5 +383,24 @@ export const ROUTES = Object.freeze([
 		path: "/admin/api/admin/publisher-control",
 		accessRole: "admin",
 		handler: handleSetPublisherControl,
+	},
+	{
+		method: "POST",
+		path: "/admin/api/admin/encryption/keys/activate",
+		accessRole: "admin",
+		handler: handleActivateEncryptionKey,
+	},
+	{
+		method: "POST",
+		path: "/admin/api/admin/encryption/verify",
+		accessRole: "admin",
+		handler: handleStartEncryptionVerification,
+	},
+	{
+		method: "POST",
+		path: "/admin/api/admin/encryption/keys/{version}/retire",
+		match: matchRetireEncryptionKeyPath,
+		accessRole: "admin",
+		handler: handleRetireEncryptionKey,
 	},
 ] as const satisfies readonly RouteDefinition[]);

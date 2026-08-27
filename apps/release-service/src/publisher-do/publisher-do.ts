@@ -636,6 +636,21 @@ export class PublisherDurableObject extends DurableObject<Env> {
 		return this.#workloadPolicies.get(packageSlug);
 	}
 
+	getWorkloadPolicyIfInitialized(
+		publisherDid: string,
+		packageSlug: string,
+	): StoredWorkloadPolicy | null {
+		this.#assertPublisherObjectName(publisherDid);
+		const owner = this.ctx.storage.sql
+			.exec<PublisherRow>("SELECT did FROM publisher WHERE id = 1")
+			.toArray()[0];
+		if (!owner) return null;
+		if (owner.did !== publisherDid) {
+			throw new PublisherStateError("PUBLISHER_DID_MISMATCH");
+		}
+		return this.#workloadPolicies.get(packageSlug);
+	}
+
 	listWorkloadPolicies(
 		publisherDid: string,
 		afterPackageSlug: string | null,
@@ -1226,7 +1241,7 @@ export class PublisherDurableObject extends DurableObject<Env> {
 			afterSequence < 0 ||
 			!Number.isSafeInteger(limit) ||
 			limit < 1 ||
-			limit > 100
+			limit > 101
 		) {
 			throw new PublisherStateError("OPERATIONS_EXPORT_INVALID");
 		}
