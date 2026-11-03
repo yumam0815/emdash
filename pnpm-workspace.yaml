@@ -8,10 +8,8 @@ minimumReleaseAgeExclude:
   - "@rolldown/binding-*"
   - "@emnapi/core"
   - "@emnapi/runtime"
-  # Astro 7.0.0 and the whole @astrojs/* family (adapters, markdown-satteri,
-  # internal helpers, etc.) were published together on 2026-06-22 and are all
-  # still inside the 24h cooldown. Exclude them so the upgrade install doesn't
-  # stall. TEMPORARY: remove this scope exclusion once the cooldown has elapsed.
+  # Historical exceptions for the coordinated Astro 7 migration on 2026-06-22.
+  # TEMPORARY: remove these after reviewing the pinned family release ages.
   - astro
   - "@astrojs/*"
 trustPolicy: no-downgrade
@@ -20,6 +18,9 @@ dangerouslyAllowAllBuilds: false
 blockExoticSubdeps: true
 verifyStoreIntegrity: true
 strictStorePkgContentCheck: true
+# Supply-chain checks fetch full metadata, including large release histories.
+networkConcurrency: 8
+fetchTimeout: 180000
 verifyDepsBeforeRun: error
 allowBuilds:
   "@parcel/watcher": true
