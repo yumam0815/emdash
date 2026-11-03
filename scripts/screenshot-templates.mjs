@@ -18,6 +18,8 @@ import { fileURLToPath } from "node:url";
 
 import { chromium } from "@playwright/test";
 
+import { launchPatchedChromium } from "./browser-security.mjs";
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 
@@ -118,7 +120,7 @@ async function run() {
 
 	console.log(`\n${template} → ${outDir}`);
 
-	const browser = await chromium.launch();
+	const browser = await launchPatchedChromium(chromium);
 	let result;
 
 	try {

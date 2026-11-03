@@ -3,12 +3,10 @@
  *
  * Captures pixel snapshots of key admin screens in both LTR (English) and
  * RTL (Arabic) and diffs them against committed baselines via Playwright's
- * built-in `toHaveScreenshot()` assertion. This is the *local runner* approach:
- * the browser is whatever `playwright install chromium` gave you. That makes it
- * environment-sensitive -- baselines generated on macOS will NOT match a Linux
- * CI runner. For stable CI, regenerate baselines inside the pinned Playwright
- * Docker image (mcr.microsoft.com/playwright) or run this against Cloudflare
- * Browser Rendering so the render environment is fixed. See the PR discussion.
+ * built-in `toHaveScreenshot()` assertion. CI uses the Chrome for Testing build
+ * pinned by scripts/install-test-chrome.sh. Local runs use installed Chrome.
+ * Baselines generated on macOS do not match a Linux CI runner; regenerate them
+ * with the pinned CI browser after reviewing the rendered differences.
  *
  * Gated behind EMDASH_VISUAL=1 so visual snapshots stay out of the default e2e
  * suite; they are slow and platform-sensitive, so CI runs them explicitly:

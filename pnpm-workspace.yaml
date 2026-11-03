@@ -1,5 +1,5 @@
 # Supply-chain hardening.
-minimumReleaseAge: 1440
+minimumReleaseAge: 10080
 # rolldown (vite 8's bundler) exact-pins these to its rc version, so the
 # cooldown has no mature alternative to fall back to and the install dies.
 # Scoped to the binaries/runtime only -- @rolldown/pluginutils etc. stay

@@ -45,13 +45,9 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm run --filter emdash... build
-      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        id: playwright-cache
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ hashFiles('pnpm-lock.yaml') }}
-      - run: pnpm exec playwright install --with-deps chromium
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
+      - run: node --test scripts/browser-security.test.mjs
+      - run: pnpm exec playwright install-deps chromium
+      - run: bash scripts/install-test-chrome.sh
 
       - name: Run visual regression
         id: run

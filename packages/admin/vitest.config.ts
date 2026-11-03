@@ -2,6 +2,8 @@ import react from "@vitejs/plugin-react";
 import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vitest/config";
 
+import { browserLaunchOptions } from "../../scripts/browser-security.mjs";
+
 export default defineConfig({
 	plugins: [
 		react({
@@ -14,6 +16,7 @@ export default defineConfig({
 		}),
 	],
 	test: {
+		globalSetup: "../../e2e/browser-global-setup.mjs",
 		globals: true,
 		include: ["tests/**/*.test.{ts,tsx}"],
 		setupFiles: ["./tests/setup.ts"],
@@ -21,6 +24,7 @@ export default defineConfig({
 			enabled: true,
 			// Pin a non-UTC timezone so timestamp-parsing tests catch local-vs-UTC bugs.
 			provider: playwright({
+				launchOptions: browserLaunchOptions,
 				contextOptions: { timezoneId: "America/New_York" },
 			}),
 			instances: [{ browser: "chromium" }],

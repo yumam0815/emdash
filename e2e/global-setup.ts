@@ -13,6 +13,10 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 
+import { chromium } from "@playwright/test";
+
+import { verifyBrowserSecurity } from "../scripts/browser-security.mjs";
+
 const execAsync = promisify(execFile);
 
 const __filename = fileURLToPath(import.meta.url);
@@ -269,6 +273,7 @@ async function seedTestData(
 // ---------------------------------------------------------------------------
 
 export default async function globalSetup(): Promise<void> {
+	await verifyBrowserSecurity(chromium);
 	await ensureBuilt();
 	await ensureFixtureDepsBuilt();
 
