@@ -54,6 +54,8 @@ patchedDependencies:
   partysocket@1.1.18: patches/partysocket@1.1.18.patch
 
 enablePrePostScripts: true
+# Core and its AT Protocol auth provider intentionally peer-depend on each other.
+ignoreWorkspaceCycles: true
 
 packages:
   - packages/*
