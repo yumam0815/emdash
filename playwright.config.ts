@@ -1,5 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
+import { browserLaunchOptions } from "./scripts/browser-security.mjs";
+
 /**
  * Playwright E2E test configuration for EmDash CMS
  *
@@ -32,7 +34,11 @@ export default defineConfig({
 	projects: [
 		{
 			name: "chromium",
-			use: { ...devices["Desktop Chrome"] },
+			use: {
+				...devices["Desktop Chrome"],
+				channel: browserLaunchOptions.channel,
+				launchOptions: browserLaunchOptions,
+			},
 		},
 	],
 

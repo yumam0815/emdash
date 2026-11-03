@@ -601,11 +601,21 @@ test.describe("Media Library", () => {
 		await expect(mediaGrid.locator("img").first()).toHaveAttribute("src", originalSrc!);
 
 		const folderSearch = page.getByRole("searchbox", { name: "Search media" });
+		const searchResponse = page.waitForResponse((response) => {
+			const url = new URL(response.url());
+			return (
+				url.pathname.endsWith("/_emdash/api/media") && url.searchParams.get("q") === searchTerm
+			);
+		});
 		await folderSearch.fill(searchTerm);
+		expect((await searchResponse).ok()).toBe(true);
+		await expect(page.locator("[data-media-library]")).not.toHaveAttribute("aria-busy", "true");
 		const filteredMediaResponse = page.waitForResponse((response) => {
 			const url = new URL(response.url());
 			return (
-				url.pathname.endsWith("/_emdash/api/media") && url.searchParams.get("mimeType") === "image/"
+				url.pathname.endsWith("/_emdash/api/media") &&
+				url.searchParams.get("q") === searchTerm &&
+				url.searchParams.get("mimeType") === "image/"
 			);
 		});
 		await page.getByRole("combobox", { name: "Filter by type" }).click();
